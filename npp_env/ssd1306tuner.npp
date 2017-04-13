@@ -1,0 +1,78 @@
+<NotepadPlus>
+    <Project name="ssd1306tuner">
+        <Folder name="lib">
+            <Folder name="CMSIS">
+                <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\CMSIS\core_cm3.c" />
+                <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\CMSIS\core_cm3.h" />
+                <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\CMSIS\startup_stm32f10x_md.S" />
+                <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\CMSIS\stm32f10x.h" />
+                <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\CMSIS\stm32f10x_conf.h" />
+                <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\CMSIS\system_stm32f10x.c" />
+                <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\CMSIS\system_stm32f10x.h" />
+            </Folder>
+            <Folder name="STM32F10x_StdPeriph_Driver">
+                <Folder name="inc">
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\misc.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_bkp.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_can.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_cec.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_crc.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_dac.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_dbgmcu.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_dma.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_exti.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_flash.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_fsmc.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_gpio.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_i2c.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_iwdg.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_pwr.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_rcc.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_rtc.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_sdio.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_spi.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_tim.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_usart.h" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\inc\stm32f10x_wwdg.h" />
+                </Folder>
+                <Folder name="src">
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\misc.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_cec.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_crc.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_dac.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_dbgmcu.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_dma.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_exti.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_flash.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_fsmc.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_i2c.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_iwdg.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_rcc.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_rtc.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_sdio.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_tim.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_usart.c" />
+                    <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\lib\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c" />
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder name="npp_env">
+            <File name="npes_saved.txt" />
+            <File name="runmake.bat" />
+            <File name="ssd1306tuner.npp" />
+        </Folder>
+        <Folder name="src">
+            <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\src\main.c" />
+        </Folder>
+        <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\LinkerScript.ld" />
+        <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\Makefile" />
+        <File name="C:\Users\sanchesor\Documents\projects\ssd1306tuner\README" />
+    </Project>
+</NotepadPlus>

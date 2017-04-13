@@ -47,6 +47,10 @@ void blink_sos()
 	blinkC13(200);
 	blinkC13(200);
 	blinkC13(200);	
+
+	blinkC13(50);
+	blinkC13(50);
+	blinkC13(50);	
 	
 	delay_ms(500);
 }
