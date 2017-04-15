@@ -66,8 +66,20 @@ $(LIB_OBJS): $(LIB_BIN_DIR)\\%.o: $(LIB_SRC_DIR)\\%.c | $(LIB_BIN_DIR)
 
 # src
 
-$(BIN_DIR)\main.elf: $(BIN_DIR)\main.o $(COMMON_OBJS) $(LIB_OBJS) | $(BIN_DIR)
-	$(CC) $(LFLAGS) -o $(BIN_DIR)\main.elf $(BIN_DIR)\main.o $(COMMON_OBJS) $(LIB_OBJS)
+USER_OBJS = \
+$(BIN_DIR)\libssd1306.o \
+$(BIN_DIR)\movingrect.o
+
+	
+$(BIN_DIR)\movingrect.o: $(SRC_DIR)\movingrect.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(BIN_DIR)\movingrect.o $(SRC_DIR)\movingrect.c
+
+$(BIN_DIR)\libssd1306.o: $(SRC_DIR)\libssd1306.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(BIN_DIR)\libssd1306.o $(SRC_DIR)\libssd1306.c
+	
+
+$(BIN_DIR)\main.elf: $(BIN_DIR)\main.o $(COMMON_OBJS) $(LIB_OBJS) $(USER_OBJS)| $(BIN_DIR)
+	$(CC) $(LFLAGS) -o $(BIN_DIR)\main.elf $(BIN_DIR)\main.o $(COMMON_OBJS) $(LIB_OBJS) $(USER_OBJS)
 
 
 $(BIN_DIR)\main.o: $(SRC_DIR)\main.c | $(BIN_DIR)
@@ -85,8 +97,8 @@ clean:
 
 
 IMAGE = $(BIN_DIR)\\main.elf
-OPENOCD_DIR = f:\download\openocd-0.10.0
-#OPENOCD_DIR = C:\Users\sanchesor\Downloads\openocd-0.10.0
+#OPENOCD_DIR = f:\download\openocd-0.10.0
+OPENOCD_DIR = C:\Users\sanchesor\Downloads\openocd-0.10.0
 OPENOCD_PROGRAM = "$(OPENOCD_DIR)\bin\openocd.exe"
 OPENOCD_SCRIPTS = -s "$(OPENOCD_DIR)\scripts\interface" -s "$(OPENOCD_DIR)\scripts\target"
 install: 
