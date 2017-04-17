@@ -1,20 +1,12 @@
 #include "stm32f10x.h"
 #include "libssd1306.h"
 #include "movingrect.h"
+#include <math.h>
 
-void simple_delay(int delay)
-{
-	for(int i=0;i<=4000;i++)
-	{
-		for(int j=delay;j>0;j--)
-		{
-
-		}
-	}
-}
 
 volatile uint8_t tl[64];
 volatile int tl_index = 0;
+
 
 void TIM2_IRQHandler()
 {
@@ -22,16 +14,10 @@ void TIM2_IRQHandler()
 	{
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 		
-		tl_index++;
-		if(tl_index == 64)
-			tl_index = 0;
 
-		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0)
-			tl[tl_index] = 40;
-		else
-			tl[tl_index] = 0;
 	}
 }
+
 
 void hardware_init()
 {
@@ -63,8 +49,8 @@ void hardware_init()
 		
 	TIM_TimeBaseStructInit(&tim);
 	tim.TIM_CounterMode = TIM_CounterMode_Up;
-	tim.TIM_Prescaler = 72-1;	// 72-1 -> period in us
-	tim.TIM_Period = 46-1;
+	tim.TIM_Prescaler = 7200-1;	// 72-1 -> period in us
+	tim.TIM_Period = 60000-1;
 	TIM_TimeBaseInit(TIM2, &tim);
 	
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
@@ -88,21 +74,53 @@ void draw_timeline()
 		drawLineH(offset, offset+tl[i], i);
 	}
 	
-//	drawLineH(0,3,tl_index);
+}
+
+double speed=1.0;
+void calc_timeline()
+{
+	
+	uint16_t t = TIM_GetCounter(TIM2);
+	
+	/*
+	tl_index = t/10;
+	
+	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0)
+		tl[tl_index] = tl[tl_index]+10;
+	else
+		tl[tl_index] = 0;	
+	*/
+	
+	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6) == 0)
+		speed += 0.01*speed;
+	if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7) == 0)
+		speed -= 0.01*speed;
+		
+	for(int i=0;i<63;i++)
+	{
+		tl[i] = 30*sin(0.1*i + t*0.001*speed);
+	}
+	
 }
 
 int main(void)
 {
 	hardware_init();
 	ssd1306init();
-
+	
 	while(1)
 	{					
 		
-		ClearBuffer();
-	
-		draw_timeline();
 		
+		ClearBuffer();
+		
+		calc_timeline();
+		draw_timeline();
+
 		TransferBuffer();
+		
+
+		
+		
 	}
 }
