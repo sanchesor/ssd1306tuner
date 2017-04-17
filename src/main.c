@@ -2,12 +2,12 @@
 #include "libssd1306.h"
 #include "movingrect.h"
 
-#define T1 4027
+#define T1 4010
 #define T2 3002
-#define T3 2246
-#define T4 1685
-#define T5 1337
-#define T6 1000
+#define T3 2257
+#define T4 1690
+#define T5 1340
+#define T6 1005
 
 #define COUNTER_MAX 10000 - 1
 
@@ -26,19 +26,6 @@ volatile uint16_t base_offset[] = {
 	COUNTER_MAX%T6
 };
 
-void TIM2_IRQHandler()
-{
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET)
-	{
-		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-		
-		for(int i=0;i<6;i++)
-		{
-			offset[i] = (offset[i] + base_offset[i])%TT[i];
-		}
-
-	}
-}
 
 
 void hardware_init()
@@ -47,10 +34,12 @@ void hardware_init()
 	I2C_InitTypeDef i2c;
 	TIM_TimeBaseInitTypeDef tim;
 	NVIC_InitTypeDef nvic;
+	ADC_InitTypeDef adc;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOA, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOA|RCC_APB2Periph_ADC1|RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1|RCC_APB1Periph_TIM2, ENABLE);
-
+	
+	 
 	GPIO_StructInit(&gpio);
 	gpio.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // SCL, SDA
 	gpio.GPIO_Mode = GPIO_Mode_AF_OD;
@@ -61,6 +50,11 @@ void hardware_init()
 	gpio.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;	// faster, slower
 	gpio.GPIO_Mode = GPIO_Mode_IPU;
 	gpio.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_Init(GPIOA, &gpio);
+
+	GPIO_StructInit(&gpio);
+	gpio.GPIO_Pin = GPIO_Pin_0;	// A0
+	gpio.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &gpio);
 	
 	I2C_StructInit(&i2c);
@@ -84,39 +78,30 @@ void hardware_init()
 	nvic.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&nvic);
 
+	RCC_ADCCLKConfig(RCC_PCLK2_Div6);
+	
+	ADC_StructInit(&adc);
+	adc.ADC_ContinuousConvMode = ENABLE;
+	adc.ADC_NbrOfChannel = 1;
+	adc.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+	ADC_Init(ADC1, &adc);	
+	
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_71Cycles5);
+	ADC_Cmd(ADC1, ENABLE);
 
-	TIM_TimeBaseStructInit(&tim);
-	tim.TIM_CounterMode = TIM_CounterMode_Up;
-	tim.TIM_Prescaler = 7200-1;
-	tim.TIM_Period = 200;
-	TIM_TimeBaseInit(TIM3, &tim);
-	
-	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
-	TIM_Cmd(TIM3, ENABLE);
-	
-	nvic.NVIC_IRQChannel = TIM3_IRQn;
-	nvic.NVIC_IRQChannelPreemptionPriority = 0;
-	nvic.NVIC_IRQChannelSubPriority = 0;
-	nvic.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&nvic);
+	ADC_ResetCalibration(ADC1);
+	while (ADC_GetResetCalibrationStatus(ADC1));
+
+	ADC_StartCalibration(ADC1);
+	while (ADC_GetCalibrationStatus(ADC1));
+
+	ADC_SoftwareStartConvCmd(ADC1, ENABLE);	
 	
 }
-
-/*
-void draw_timeline()
-{
-	int offset = 5;
-	
-	for(int i=0;i<64;i++)
-	{
-		drawLineH(offset, offset+tl[i], i);
-	}	
-}
-*/
 
 void draw_lines()
 {
-	int offset = 5;
+	int offset = 1;
 	int maxh = 20;
 	
 	for(int l=0;l<6;l++)
@@ -130,10 +115,10 @@ void draw_lines()
 
 void calc_lines()
 {
-	//uint16_t v = ADC_GetConversionValue(ADC1);
-	uint16_t cur_v = 4;
-	
-	// normalize cur_v !
+	uint16_t cur_v = ADC_GetConversionValue(ADC1)/4;
+
+	if(cur_v > 19)
+		cur_v = 19;
 	
 	uint16_t t = TIM_GetCounter(TIM2);
 	
@@ -146,34 +131,31 @@ void calc_lines()
 	}	
 }
 
-void TIM3_IRQHandler()
+
+void TIM2_IRQHandler()
 {
-	if (TIM_GetITStatus(TIM3, TIM_IT_Update) == SET)
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET)
 	{
-		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+		
+		for(int i=0;i<6;i++)
+		{
+			offset[i] = (offset[i] + base_offset[i])%TT[i];
+		}
 
 		ClearBuffer();		
 		draw_lines();
-		TransferBuffer();
-
-		
-
+		TransferBuffer();				
 	}
 }
-
 
 int main(void)
 {
 	hardware_init();
 	ssd1306init();
-	
-		
-	
+					
 	while(1)
-	{								
-
-
-		
-
+	{		
+		calc_lines();
 	}
 }
