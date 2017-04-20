@@ -9,15 +9,17 @@
 #define T5 1340
 #define T6 1005
 
-#define COUNTER_MAX 10000 - 1
+//#define COUNTER_MAX 10000 - 1
+#define COUNTER_MAX 65535	// 0xFFFF = max uint16_t
 
-uint16_t TT[] = {T1, T2, T3, T4, T5, T6};
+int TT[] = {T1, T2, T3, T4, T5, T6};
 
 volatile uint8_t lines[6][64];
+volatile int num_lines;
 
-volatile uint16_t offset[] = {0,0,0,0,0,0};
+volatile int offset[] = {0,0,0,0,0,0};
 
-volatile uint16_t base_offset[] = {
+volatile int base_offset[] = {
 	COUNTER_MAX%T1, 
 	COUNTER_MAX%T2, 
 	COUNTER_MAX%T3, 
@@ -113,7 +115,7 @@ void draw_lines()
 	}
 }
 
-void calc_lines()
+void calc_lines_all_waves()
 {
 	uint16_t cur_v = ADC_GetConversionValue(ADC1)/4;
 
@@ -122,15 +124,40 @@ void calc_lines()
 	
 	uint16_t t = TIM_GetCounter(TIM2);
 	
-	for(int l=0;l<6;l++)
+	// 6 lines = 6 strings
+	num_lines = 6;
+	for(int l=0;l<num_lines;l++)
 	{
-		uint16_t tp = (t + offset[l])%TT[l];		
+		uint32_t tp = (t + offset[l])%TT[l];		
 		int li = 64*tp/TT[l];
 		
 		lines[l][li] = cur_v;
 	}	
+	
 }
 
+void calc_lines_one_wave_2wider(int string)
+{
+	int cur_v = ADC_GetConversionValue(ADC1)/4;
+
+	if(cur_v > 19)
+		cur_v = 19;
+	
+	int t = TIM_GetCounter(TIM2);
+	
+	int factor = 1;	
+	// 4 lines = 4 ranges
+	num_lines = 4;
+	for(int l=0;l<num_lines;l++)
+	{
+		int tp = (t + offset[string])%(TT[string]*factor);		
+		int li = 64*tp/(TT[string]*factor);
+		
+		lines[l][li] = cur_v;
+		
+		factor *= 2;
+	}	
+}
 
 void TIM2_IRQHandler()
 {
@@ -156,6 +183,7 @@ int main(void)
 					
 	while(1)
 	{		
-		calc_lines();
+		calc_lines_one_wave_2wider(0);
 	}
 }
+
