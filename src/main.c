@@ -1,6 +1,5 @@
 #include "stm32f10x.h"
 #include "libssd1306.h"
-#include "movingrect.h"
 
 #define T1 4010
 #define T2 3002
@@ -9,12 +8,18 @@
 #define T5 1340
 #define T6 1005
 
-//#define COUNTER_MAX 10000 - 1
-#define COUNTER_MAX 65535	// 0xFFFF = max uint16_t
+#define COUNTER_MAX 10000 - 1
+//#define COUNTER_MAX 65535	// 0xFFFF = max uint16_t
 
 int TT[] = {T1, T2, T3, T4, T5, T6};
 
-volatile uint8_t lines[6][64];
+volatile int lines[6][68];	
+
+#define INDEX_MAX 64
+#define INDEX_CUR 65
+#define INDEX_LAST_POS 66
+#define INDEX_DIR 67
+
 volatile int num_lines;
 
 volatile int offset[] = {0,0,0,0,0,0};
@@ -110,10 +115,56 @@ void draw_lines()
 	{
 		for(int i=0;i<64;i++)
 		{
-			drawLineH(offset + l*maxh, offset + l*maxh + lines[l][i], i);
+			drawLineH(offset + l*maxh, offset + l*maxh + lines[l][i], i);			
 		}	
+	
+		if(lines[l][INDEX_DIR]==0)
+			drawLineV(32, 33, offset + l*maxh + 10);
+		else if(lines[l][INDEX_DIR]>0)
+			drawLineV(35, 35+lines[l][INDEX_DIR], offset + l*maxh + 10);
+		else
+			drawLineV(30, 30+lines[l][INDEX_DIR], offset + l*maxh + 10);		
 	}
 }
+
+void clear_lines()
+{
+	for(int l=0;l<num_lines;l++)
+	{
+		for(int i=0;i<64;i++)
+			lines[l][i] = 0;
+	}
+}
+
+void calc_dir(int l)
+{
+	int threshold = lines[l][INDEX_MAX] * 3/4;	// 75%
+	if(threshold > 3)
+	{		
+		int wasLower=0, found=0;
+		for(int i=0;i<64 && found==0;i++)
+		{
+			if(lines[l][i] < threshold)
+			{
+				wasLower = 1;
+			}
+			else if(wasLower == 1)
+			{
+				found=1;
+				
+				int dir = i - lines[l][INDEX_LAST_POS];
+				if(dir > 32)
+					dir -= 64;
+				else if (dir < -32)
+					dir += 64;
+					
+				lines[l][INDEX_DIR] = dir;
+				lines[l][INDEX_LAST_POS] = i;
+			}
+		}
+	}
+}
+
 
 void calc_lines_all_waves()
 {
@@ -131,33 +182,22 @@ void calc_lines_all_waves()
 		uint32_t tp = (t + offset[l])%TT[l];		
 		int li = 64*tp/TT[l];
 		
-		lines[l][li] = cur_v;
-	}	
-	
+		// first 0
+		if(li == 0 && lines[l][INDEX_CUR] == 63)
+		{
+			calc_dir(l);
+			lines[l][INDEX_MAX] = 0;
+		}
+		
+		lines[l][INDEX_CUR] = li;
+			
+		lines[l][li] = cur_v;	
+		
+		if(cur_v > lines[l][INDEX_MAX])
+			lines[l][INDEX_MAX] = cur_v;
+	}		
 }
 
-void calc_lines_one_wave_2wider(int string)
-{
-	int cur_v = ADC_GetConversionValue(ADC1)/4;
-
-	if(cur_v > 19)
-		cur_v = 19;
-	
-	int t = TIM_GetCounter(TIM2);
-	
-	int factor = 1;	
-	// 4 lines = 4 ranges
-	num_lines = 4;
-	for(int l=0;l<num_lines;l++)
-	{
-		int tp = (t + offset[string])%(TT[string]*factor);		
-		int li = 64*tp/(TT[string]*factor);
-		
-		lines[l][li] = cur_v;
-		
-		factor *= 2;
-	}	
-}
 
 void TIM2_IRQHandler()
 {
@@ -172,7 +212,7 @@ void TIM2_IRQHandler()
 
 		ClearBuffer();		
 		draw_lines();
-		TransferBuffer();				
+		TransferBuffer();						
 	}
 }
 
@@ -183,7 +223,7 @@ int main(void)
 					
 	while(1)
 	{		
-		calc_lines_one_wave_2wider(0);
+		calc_lines_all_waves();
 	}
 }
 

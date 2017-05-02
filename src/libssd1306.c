@@ -17,7 +17,15 @@ void drawPixel(uint16_t x, uint16_t y)
 
 void drawLineH(uint16_t x1, uint16_t x2, uint16_t y)
 {
-	for(uint16_t i=x1;i<=x2;i++)
+	int xb=x1,xe=x2;
+	
+	if(x2 < x1)
+	{
+		xb = x2;
+		xe = x1;
+	}
+
+	for(uint16_t i=xb;i<=xe;i++)
 	{
 		drawPixel(i, y);
 	}
@@ -25,7 +33,15 @@ void drawLineH(uint16_t x1, uint16_t x2, uint16_t y)
 
 void drawLineV(uint16_t y1, uint16_t y2, uint16_t x)
 {
-	for(uint16_t i=y1;i<=y2;i++)
+	int yb=y1,ye=y2;
+	
+	if(y2 < y1)
+	{
+		yb = y2;
+		ye = y1;
+	}
+	
+	for(uint16_t i=yb;i<=ye;i++)
 	{
 		drawPixel(x, i);
 	}
