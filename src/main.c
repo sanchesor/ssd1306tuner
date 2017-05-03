@@ -2,11 +2,11 @@
 #include "libssd1306.h"
 
 #define T1 4010
-#define T2 3002
+#define T2 3007
 #define T3 2257
 #define T4 1690
 #define T5 1340
-#define T6 1005
+#define T6 1002
 
 #define COUNTER_MAX 10000 - 1
 //#define COUNTER_MAX 65535	// 0xFFFF = max uint16_t
@@ -21,8 +21,11 @@ int TT[] = {T1, T2, T3, T4, T5, T6};
 #define INDEX_DIR_P2 69
 #define INDEX_DIR_P3 70
 #define INDEX_DIR_AVG 71
+#define INDEX_MIN 72
+#define INDEX_MIN_P 73
+#define INDEX_MIN_COUNT 74
 
-#define INDEX_LINES_SIZE 72
+#define INDEX_LINES_SIZE 75
 
 volatile int lines[6][INDEX_LINES_SIZE];	
 
@@ -159,18 +162,26 @@ void shift_dir(int l)
 void calc_dir(int l)
 {
 	int threshold = lines[l][INDEX_MAX] * 3/4;	// 75%
-	if(threshold > 5)
+	if(threshold > 10)
 	{		
-		int wasLower=0, found=0;
-		for(int i=0;i<64 && found==0;i++)
+		int lower1=-1,lower2=-1,higher1=-1,higher2=-1;
+		for(int i=0;i<64 && higher2==-1;i++)
 		{
-			if(lines[l][i] < threshold)
+			if(lines[l][i] < threshold && lower1==-1)
 			{
-				wasLower = 1;
+				lower1 = lines[l][i];
 			}
-			else if(wasLower == 1)
+			else if(lines[l][i] < threshold && lines[l][i] > lower1 && lower2==-1) 	
 			{
-				found=1;
+				lower2 = lines[l][i];
+			}
+			else if(lines[l][i] >= threshold && higher1 == -1)
+			{
+				higher1 = lines[l][i];
+			}
+			else if(lines[l][i] >= threshold && lines[l][i] >= higher1 && higher2 == -1)
+			{
+				higher2 = lines[l][i];
 				
 				int dir = i - lines[l][INDEX_LAST_POS];
 				if(dir > 32)
@@ -179,8 +190,17 @@ void calc_dir(int l)
 					dir += 64;
 					
 				lines[l][INDEX_DIR] = dir;
-				lines[l][INDEX_LAST_POS] = i;
+				lines[l][INDEX_LAST_POS] = i;				
 			}
+			else
+			{
+				lower1=-1;
+				lower2=-1;
+				higher1=-1;
+				higher2=-1;
+				lines[l][INDEX_DIR] = 0;
+			}
+			
 		}
 	}
 	else
@@ -196,9 +216,7 @@ void calc_lines_all_waves()
 {
 	uint16_t cur_v = ADC_GetConversionValue(ADC1)/4;
 
-	if(cur_v > 19)
-		cur_v = 19;
-	
+		
 	uint16_t t = TIM_GetCounter(TIM2);
 	
 	// 6 lines = 6 strings
@@ -210,17 +228,55 @@ void calc_lines_all_waves()
 		
 		// first 0
 		if(li == 0 && lines[l][INDEX_CUR] == 63)
-		{
+		{									
 			calc_dir(l);
 			lines[l][INDEX_MAX] = 0;
+			
+			lines[l][INDEX_MIN_P] = lines[l][INDEX_MIN];
+			lines[l][INDEX_MIN] = 5000;
 		}
 		
 		lines[l][INDEX_CUR] = li;
-			
-		lines[l][li] = cur_v;	
 		
-		if(cur_v > lines[l][INDEX_MAX])
-			lines[l][INDEX_MAX] = cur_v;
+		int l_cur_v = cur_v - lines[l][INDEX_MIN_P];
+		if(l_cur_v < 0)
+			l_cur_v = 0;
+		else if(l_cur_v > 19)
+			l_cur_v = 19;
+				
+		
+		// filtering
+		if(li>1)
+		{
+			int diff1 = lines[l][li-1] - lines[l][li-2];
+			int diff2 = l_cur_v - lines[l][li-1];
+			int diff = diff1-diff2;
+			if(diff > 3 || diff < -3)
+			{
+				lines[l][li-1] = (l_cur_v + lines[l][li-2])/2;
+			}
+		}
+							
+		if(l_cur_v > lines[l][INDEX_MAX])
+			lines[l][INDEX_MAX] = l_cur_v;
+		
+		if(cur_v < lines[l][INDEX_MIN])
+			lines[l][INDEX_MIN] = cur_v;
+		
+				
+		lines[l][li] = l_cur_v;	
+		
+		/* count test
+		lines[l][li]++;		
+		if(li < 63)
+		{			
+			lines[l][li+1] = 0;
+		}
+		else
+		{
+			lines[l][0] = 0;
+		}
+		*/
 	}		
 }
 
