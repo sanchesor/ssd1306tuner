@@ -42,5 +42,7 @@ void drawLineH(uint16_t x1, uint16_t x2, uint16_t y);
 void drawLineV(uint16_t y1, uint16_t y2, uint16_t x);
 void drawRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 void fillRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+void drawArrowV(uint16_t y1, uint16_t y2, uint16_t x);
+void drawThickArrowV(uint16_t y1, uint16_t y2, uint16_t x);
 
 #endif	// __LIBSSD1306_H

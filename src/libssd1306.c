@@ -12,6 +12,9 @@ void ClearBuffer()
 
 void drawPixel(uint16_t x, uint16_t y)
 {
+	if(x < 0 || x > 127 || y < 0 || y > 63)
+		return;
+	
 	buffer[x+(y/8)*128] |= (1 << (y&7));
 }
 
@@ -24,7 +27,7 @@ void drawLineH(uint16_t x1, uint16_t x2, uint16_t y)
 		xb = x2;
 		xe = x1;
 	}
-
+	
 	for(uint16_t i=xb;i<=xe;i++)
 	{
 		drawPixel(i, y);
@@ -40,10 +43,66 @@ void drawLineV(uint16_t y1, uint16_t y2, uint16_t x)
 		yb = y2;
 		ye = y1;
 	}
-	
+		
 	for(uint16_t i=yb;i<=ye;i++)
 	{
 		drawPixel(x, i);
+	}
+}
+
+void drawArrowV(uint16_t y1, uint16_t y2, uint16_t x)
+{
+	drawLineV(y1,y2,x);
+	if(y2 > y1)
+	{
+		drawPixel(x-1,y2-1);
+		drawPixel(x+1,y2-1);
+		drawPixel(x-2,y2-2);
+		drawPixel(x+2,y2-2);	
+	}
+	else
+	{
+		drawPixel(x-1,y2+1);
+		drawPixel(x+1,y2+1);
+		drawPixel(x-2,y2+2);
+		drawPixel(x+2,y2+2);			
+	}
+}
+
+void drawThickArrowV(uint16_t y1, uint16_t y2, uint16_t x)
+{
+	drawLineV(y1,y2,x);	
+	
+	if(y2 > y1)
+	{
+		drawPixel(x-1,y2-1);
+		drawPixel(x+1,y2-1);
+		drawPixel(x-2,y2-2);
+		drawPixel(x+2,y2-2);	
+		
+		drawPixel(x-1,y2-2);
+		drawPixel(x+1,y2-2);
+		drawPixel(x-2,y2-3);
+		drawPixel(x+2,y2-3);	
+
+		drawLineV(y1,y2-1,x-1);
+		drawLineV(y1,y2-1,x+1);	
+	}
+	else
+	{
+		drawPixel(x-1,y2+1);
+		drawPixel(x+1,y2+1);
+		drawPixel(x-2,y2+2);
+		drawPixel(x+2,y2+2);			
+		
+		drawPixel(x-1,y2+2);
+		drawPixel(x+1,y2+2);
+		drawPixel(x-2,y2+3);
+		drawPixel(x+2,y2+3);			
+		
+		drawLineV(y1,y2+1,x-1);
+		drawLineV(y1,y2+1,x+1);	
+		
 	}
 }
 

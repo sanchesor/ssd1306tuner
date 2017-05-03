@@ -13,12 +13,19 @@
 
 int TT[] = {T1, T2, T3, T4, T5, T6};
 
-volatile int lines[6][68];	
-
 #define INDEX_MAX 64
 #define INDEX_CUR 65
 #define INDEX_LAST_POS 66
 #define INDEX_DIR 67
+#define INDEX_DIR_P1 68
+#define INDEX_DIR_P2 69
+#define INDEX_DIR_P3 70
+#define INDEX_DIR_AVG 71
+
+#define INDEX_LINES_SIZE 72
+
+volatile int lines[6][INDEX_LINES_SIZE];	
+
 
 volatile int num_lines;
 
@@ -118,12 +125,11 @@ void draw_lines()
 			drawLineH(offset + l*maxh, offset + l*maxh + lines[l][i], i);			
 		}	
 	
-		if(lines[l][INDEX_DIR]==0)
-			drawLineV(32, 33, offset + l*maxh + 10);
-		else if(lines[l][INDEX_DIR]>0)
-			drawLineV(35, 35+lines[l][INDEX_DIR], offset + l*maxh + 10);
-		else
-			drawLineV(30, 30+lines[l][INDEX_DIR], offset + l*maxh + 10);		
+		int dir = lines[l][INDEX_DIR_AVG];
+		if(dir>0)
+			drawThickArrowV(63, 63-dir, offset + l*maxh + 10);
+		else if(dir<0)
+			drawThickArrowV(1, 1-dir, offset + l*maxh + 10);			
 	}
 }
 
@@ -136,10 +142,24 @@ void clear_lines()
 	}
 }
 
+void shift_dir(int l)
+{
+	int avg = (lines[l][INDEX_DIR]
+		+ lines[l][INDEX_DIR_P1]
+		+ lines[l][INDEX_DIR_P2]
+		+ lines[l][INDEX_DIR_P3])/4;
+	
+	lines[l][INDEX_DIR_AVG] = avg;
+	
+	lines[l][INDEX_DIR_P3] = lines[l][INDEX_DIR_P2];
+	lines[l][INDEX_DIR_P2] = lines[l][INDEX_DIR_P1];
+	lines[l][INDEX_DIR_P1] = lines[l][INDEX_DIR];	
+}
+
 void calc_dir(int l)
 {
 	int threshold = lines[l][INDEX_MAX] * 3/4;	// 75%
-	if(threshold > 3)
+	if(threshold > 5)
 	{		
 		int wasLower=0, found=0;
 		for(int i=0;i<64 && found==0;i++)
@@ -163,6 +183,12 @@ void calc_dir(int l)
 			}
 		}
 	}
+	else
+	{
+		lines[l][INDEX_DIR] = 0;
+	}
+	
+	shift_dir(l);
 }
 
 

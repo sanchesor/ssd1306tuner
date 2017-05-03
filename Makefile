@@ -97,8 +97,8 @@ clean:
 
 
 IMAGE = $(BIN_DIR)\\main.elf
-OPENOCD_DIR = f:\download\openocd-0.10.0
-#OPENOCD_DIR = C:\Users\sanchesor\Downloads\openocd-0.10.0
+#OPENOCD_DIR = f:\download\openocd-0.10.0
+OPENOCD_DIR = C:\Users\sanchesor\Downloads\openocd-0.10.0
 OPENOCD_PROGRAM = "$(OPENOCD_DIR)\bin\openocd.exe"
 OPENOCD_SCRIPTS = -s "$(OPENOCD_DIR)\scripts\interface" -s "$(OPENOCD_DIR)\scripts\target"
 install: 
